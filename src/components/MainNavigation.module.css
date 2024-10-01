@@ -1,0 +1,18 @@
+.navDiv {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 70px;
+}
+
+.navIcon {
+  color: #000;
+  font-size: 30px;
+  font-family: "Montserrat";
+  -webkit-font-smoothing: antialiased;
+  font-weight: 900;
+}
+
+.logoutButton {
+  margin-right: 15px;
+}
