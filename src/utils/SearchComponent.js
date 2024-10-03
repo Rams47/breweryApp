@@ -3,23 +3,33 @@ import SearchIcon from "@mui/icons-material/Search";
 import classes from "./SearchComponent.module.css";
 import SelectSearchBy from "./SelectSearchBy";
 import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const SearchComponent = () => {
   const [searchValue, setSearchValue] = useState("");
   const [searchBy, setSearchBy] = useState("city");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setSearchValue(e.target.value);
     console.log(searchValue);
   };
 
-  const handleClick = () => {
+  const handleClick = (e) => {
+    e.preventDefault();
     console.log(searchValue);
     console.log(searchBy);
+    if (searchValue.trim() !== "") {
+      navigate(
+        `/search?searchBy=${searchBy}&searchValue=${encodeURIComponent(
+          searchValue
+        )}`
+      );
+    }
   };
 
   return (
-    <div className={classes.searchBar}>
+    <form className={classes.searchBar} onSubmit={handleClick}>
       <input
         type="text"
         placeholder="Search..."
@@ -40,12 +50,12 @@ const SearchComponent = () => {
               },
             },
           }}
-          onClick={handleClick}
+          type="submit"
         >
           <SearchIcon />
         </Button>
       </div>
-    </div>
+    </form>
   );
 };
 

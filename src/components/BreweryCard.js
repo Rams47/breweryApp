@@ -12,6 +12,13 @@ const BreweryCard = ({ brewery }) => {
     state,
   } = brewery;
 
+  const truncateText = (text, maxLength) => {
+    if (text.length > maxLength) {
+      return text.slice(0, maxLength - 3) + "...";
+    }
+    return text;
+  };
+
   return (
     <Card
       sx={{
@@ -30,19 +37,23 @@ const BreweryCard = ({ brewery }) => {
     >
       <CardContent>
         <Typography variant="h5" component="div">
-          {name}
+          {name ? truncateText(name, 20) : "NA"}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {address_1}
+          {address_1 ? address_1 : "NA"}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Phone: {phone}
+          Phone: {phone ? phone : "NA"}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Website:
-          <a href={website_url} target="_blank" rel="noopener noreferrer">
-            {website_url}
-          </a>
+          {website_url ? (
+            <a href={website_url} target="_blank" rel="noopener noreferrer">
+              {website_url}
+            </a>
+          ) : (
+            "NA"
+          )}
         </Typography>
         <Typography variant="body1" sx={{ marginTop: "8px" }}>
           Rating: {rating} / 5
