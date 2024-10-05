@@ -17,13 +17,25 @@ const BreweryDetails = () => {
     fetchBrewery();
   }, [id]);
 
-  if (!brewery) return <div>Loading...</div>;
+  if (!brewery)
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          textAlign: "center",
+        }}
+      >
+        <h1>Loading...</h1>
+      </div>
+    );
 
   return (
     <div
       style={{
         padding: "20px",
-        backgroundColor: "#f9f9f9",
         borderRadius: "8px",
       }}
     >

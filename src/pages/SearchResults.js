@@ -21,9 +21,7 @@ const SearchResults = () => {
         const response = await axios.get(
           `https://api.openbrewerydb.org/v1/breweries?by_${searchBy}=${searchValue}&per_page=20`
         );
-        console.log(
-          `https://api.openbrewerydb.org/v1/breweries?by_${searchBy}=${searchValue}&per_page=20`
-        );
+
         setBreweries(response.data);
       } catch (err) {
         setError(err);
@@ -61,7 +59,6 @@ const SearchResults = () => {
       flexWrap="wrap"
       justifyContent="center"
       gap={1}
-      backgroundColor="#f2f2f2"
       paddingTop="10px"
     >
       {breweries.map((brewery, index) => (

@@ -1,21 +1,51 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import BreweryCard from "../components/BreweryCard";
-import { Box } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 
 function HomePage() {
   const [breweries, setBreweries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [location, setLocation] = useState({
+    latitude: null,
+    longitude: null,
+  });
+
+  const itemsPerPage = 21;
 
   useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        (error) => {
+          setError(error.message);
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by this browser.");
+    }
+
     const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
         const response = await axios.get(
-          "https://api.openbrewerydb.org/v1/breweries"
+          `https://api.openbrewerydb.org/v1/breweries?by_dist=${location.latitude},${location.longitude}&per_page=${itemsPerPage}&page=${page}`
         );
         setBreweries(response.data);
+
+        const estimatedTotalItems = 1000;
+        setTotalPages(Math.ceil(estimatedTotalItems / itemsPerPage));
       } catch (err) {
         setError(err);
       } finally {
@@ -24,7 +54,15 @@ function HomePage() {
     };
 
     fetchData();
-  }, []);
+  }, [page]);
+
+  const handleNextPage = () => {
+    if (page < totalPages) setPage(page + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (page > 1) setPage(page - 1);
+  };
 
   if (loading) {
     return (
@@ -49,32 +87,62 @@ function HomePage() {
   return (
     <Box
       display="flex"
-      flexWrap="wrap"
-      justifyContent="center"
-      gap={1}
-      backgroundColor="#f2f2f2"
+      flexDirection="column"
+      alignItems="center"
       paddingTop="10px"
     >
-      {breweries.map((brewery, index) => (
-        <Box
-          key={index}
-          sx={{
-            width: {
-              xs: "100%",
-              sm: "50%",
-              md: "31.33%",
-            },
-            flexShrink: 0,
-          }}
-        >
-          <Link
-            to={`/breweries/${brewery.id}`}
-            style={{ textDecoration: "none" }}
+      <Box display="flex" flexWrap="wrap" justifyContent="center" gap={1}>
+        {breweries.map((brewery, index) => (
+          <Box
+            key={index}
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "50%",
+                md: "31.33%",
+              },
+              flexShrink: 0,
+            }}
           >
-            <BreweryCard brewery={brewery} />
-          </Link>
-        </Box>
-      ))}
+            <Link
+              to={`/breweries/${brewery.id}`}
+              style={{ textDecoration: "none" }}
+            >
+              <BreweryCard brewery={brewery} />
+            </Link>
+          </Box>
+        ))}
+      </Box>
+
+      <Box
+        mt={3}
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        gap={2}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handlePreviousPage}
+          disabled={page === 1}
+        >
+          Previous
+        </Button>
+
+        <Typography variant="body1">
+          Page {page} of {totalPages}
+        </Typography>
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleNextPage}
+          disabled={page === totalPages}
+        >
+          Next
+        </Button>
+      </Box>
     </Box>
   );
 }
